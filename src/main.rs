@@ -23,7 +23,7 @@ fn main() {
             let 词 = entry[0].clone();
             let 码 = entry[1].clone();
             if let Ok(候选位) = entry[2].parse::<usize>() {
-                码表.entry(码).or_insert(Vec::new()).insert(候选位, 词);
+                码表.entry(码).or_insert(Vec::new()).insert(候选位 - 1, 词);
             }
         }
         for entry in lines.iter().filter(|x| x.len() == 4 || (x.len() == 3 && x[2].parse::<usize>().is_err())) {
