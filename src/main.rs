@@ -32,15 +32,11 @@ fn main() {
             let 词 = entry[0].clone();
             let 码 = entry[1].clone();
             if let Ok(候选位) = entry[2].parse::<usize>() {
-                let 候选 = 码表.entry(码.clone()).or_insert(Vec::new());
-                while 候选位 - 1 > 候选.len() {
+                let 候选 = 码表.entry(码.clone()).or_default();
+                while 候选位 > 候选.len() {
                     候选.push(None);
                 }
-                if 候选.get(候选位 - 1).unwrap_or(&Some(String::new())).is_none() {
-                    码表.get_mut(&码).unwrap()[候选位 - 1] = Some(词);
-                } else {
-                    码表.get_mut(&码).unwrap().insert(候选位 - 1, Some(词));
-                }
+                码表.get_mut(&码).unwrap()[候选位 - 1] = Some(词);
             }
         }
         for entry in lines.iter().filter(|x| x.len() == 4 || (x.len() == 3 && x[2].parse::<usize>().is_err())) {
@@ -55,11 +51,7 @@ fn main() {
                 while 候选位 - 1 > 新候选.len() {
                     新候选.push(None);
                 }
-                if 新候选[候选位 - 1].is_none() {
-                    码表.get_mut(&码).unwrap()[候选位 - 1] = Some(词);
-                } else {
-                    码表.get_mut(&码).unwrap().insert(候选位 - 1, Some(词));
-                }
+                新候选.insert(候选位 - 1, Some(词));
                 码表.insert(码, 新候选);
             } else {
                 if entry[2] == "删" {
