@@ -45,15 +45,29 @@ fn main() {
                 let 词 = entry[0].clone();
                 let 码 = entry[1].clone();
                 let 候选位 = entry[2].parse::<usize>().unwrap();
-                let mut 新候选 = 码表[&码].clone()
-                    .into_iter()
-                    .filter(|x| *x != Some(词.clone()))
-                    .collect::<Vec<_>>();
-                while 候选位 - 1 > 新候选.len() {
-                    新候选.push(None);
+                if let Some(舍弃) = 码表[&码].iter().enumerate().find(|x| x.1.is_none()) {
+                    let mut 新候选 = 码表[&码].clone()
+                        .into_iter()
+                        .enumerate()
+                        .filter(|x| x.0 != 舍弃.0)
+                        .map(|x| x.1)
+                        .collect::<Vec<_>>();
+                        while 候选位 - 1 > 新候选.len() {
+                            新候选.push(None);
+                        }
+                        新候选.insert(候选位 - 1, Some(词));
+                        码表.insert(码, 新候选);
+                } else {
+                    let mut 新候选 = 码表[&码].clone()
+                        .into_iter()
+                        .filter(|x| *x != Some(词.clone()))
+                        .collect::<Vec<_>>();
+                    while 候选位 - 1 > 新候选.len() {
+                        新候选.push(None);
+                    }
+                    新候选.insert(候选位 - 1, Some(词));
+                    码表.insert(码, 新候选);
                 }
-                新候选.insert(候选位 - 1, Some(词));
-                码表.insert(码, 新候选);
             } else {
                 if entry[2] == "删" {
                     码表.get_mut(&entry[1]).unwrap().retain(|x| *x != Some(entry[0].clone()));
