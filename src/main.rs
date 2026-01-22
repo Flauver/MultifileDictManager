@@ -18,25 +18,26 @@ fn main() {
                 .map(|x| x.to_string())
                 .collect::<Vec<_>>());
         }
-        for entry in lines.iter().filter(|x| x.len() == 2) {
-            if let Some(候选) = 码表.entry(entry[1].clone())
-                .or_insert(Vec::<Option<String>>::new())
-                .iter_mut()
-                .find(|x| x.is_none()) {
-                *候选 = Some(entry[0].clone());
-            } else {
-                码表.get_mut(&entry[1]).unwrap().push(Some(entry[0].clone()));
-            }
-        }
-        for entry in lines.iter().filter(|x| x.len() == 3) {
-            let 词 = entry[0].clone();
-            let 码 = entry[1].clone();
-            if let Ok(候选位) = entry[2].parse::<usize>() {
-                let 候选 = 码表.entry(码.clone()).or_default();
-                while 候选位 > 候选.len() {
-                    候选.push(None);
+        for entry in lines.iter().filter(|x| x.len() == 2 || ( x.len() == 3 && x[2].parse::<usize>().is_ok() )) {
+            if entry.len() == 2 {
+                if let Some(候选) = 码表.entry(entry[1].clone())
+                    .or_insert(Vec::<Option<String>>::new())
+                    .iter_mut()
+                    .find(|x| x.is_none()) {
+                    *候选 = Some(entry[0].clone());
+                } else {
+                    码表.get_mut(&entry[1]).unwrap().push(Some(entry[0].clone()));
                 }
-                码表.get_mut(&码).unwrap()[候选位 - 1] = Some(词);
+            } else {
+                let 词 = entry[0].clone();
+                let 码 = entry[1].clone();
+                if let Ok(候选位) = entry[2].parse::<usize>() {
+                    let 候选 = 码表.entry(码.clone()).or_default();
+                    while 候选位 > 候选.len() {
+                        候选.push(None);
+                    }
+                    码表.get_mut(&码).unwrap()[候选位 - 1] = Some(词);
+                }
             }
         }
         for entry in lines.iter().filter(|x| x.len() == 4 || (x.len() == 3 && x[2].parse::<usize>().is_err())) {
